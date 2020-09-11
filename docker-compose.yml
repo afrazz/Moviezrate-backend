@@ -1,0 +1,35 @@
+version: '3.6'
+
+services:
+  #Backend-API
+  moviez-rate-api:
+    build: ./
+    working_dir: /usr/src/moviez-rate-api
+    command: npm start
+    environment: 
+      POSTGRES_URI: 'postgres://afraz:secret@moviez-rate-postgres:5432/moviez-rate-docker'
+      REDIS_URI: redis://moviez-rate-redis:6379
+    ports:
+      - '3001:3001'
+    volumes:
+      - ./:/usr/src/moviez-rate-api
+    links:
+      - moviez-rate-postgres
+      - moviez-rate-redis
+    
+  # Postgres
+  moviez-rate-postgres:
+    build: ./postgres
+    environment: 
+      POSTGRES_USER: 'afraz'
+      POSTGRES_PASSWORD: 'secret'
+      POSTGRES_DB: 'moviez-rate-docker'
+      POSTGRES_HOST: moviez-rate-postgres
+    ports:
+      - '5432:5432'
+
+  # Redis
+  moviez-rate-redis:
+    image: redis
+    ports: 
+      - '6379:6379'
